@@ -38,10 +38,6 @@ public class WatercolorsPaintingValidator : AbstractValidator<WatercolorsPaintin
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("Price must be greater than 0.")
             // Giá trị Price phải > 0
-
-            .LessThanOrEqualTo(1_000_000).WithMessage("Price must not exceed 1,000,000.")
-            // Giá trị Price phải ≤ 1,000,000
-
             .Must(price => decimal.Round(price.Value, 2) == price)
             .WithMessage("Price must have at most 2 decimal places.");
             // Giá trị Price chỉ được phép có tối đa 2 chữ số thập phân
