@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Repository.Entities;
 
@@ -23,5 +24,6 @@ public class WatercolorsPainting
 
     [DefaultValue("STYLE01")] public string? StyleId { get; set; } = "STYLE01";
 
+    [JsonIgnore]
     public virtual Style? Style { get; set; }
 }

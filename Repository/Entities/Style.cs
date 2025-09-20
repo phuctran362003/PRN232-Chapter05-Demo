@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Repository.Entities;
 
@@ -12,6 +13,7 @@ public class Style
 
     public string? OriginalCountry { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<WatercolorsPainting> WatercolorsPaintings { get; set; } =
         new List<WatercolorsPainting>();
 }
