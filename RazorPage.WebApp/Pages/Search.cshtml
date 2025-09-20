@@ -1,26 +1,40 @@
-﻿@page
-@model IndexModel
+@page
+@model RazorPage.WebApp.Pages.SearchModel
 @{
-    ViewData["Title"] = "Watercolors Paintings";
+    ViewData["Title"] = "Search Paintings";
 }
 
 <div class="container">
-    <h1 class="mt-4 mb-4">Watercolors Paintings</h1>
+    <h1 class="mt-4 mb-4">Search Watercolors Paintings</h1>
     
     <div class="mb-3">
-        <a asp-page="Create" class="btn btn-primary">Create New</a>
-        <a asp-page="Search" class="btn btn-secondary ms-2">Search</a>
+        <a asp-page="Index" class="btn btn-secondary">Back to List</a>
     </div>
-    
-    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
     
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
         <div class="alert alert-danger">@Model.ErrorMessage</div>
     }
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="author" class="form-label">Author</label>
+                        <input type="text" class="form-control" id="author" name="author" value="@Model.Author">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="date" class="form-label">Published Year</label>
+                        <input type="number" class="form-control" id="date" name="date" value="@Model.Date">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     
     @if (Model.Paintings.Any())
     {
@@ -49,8 +63,6 @@
                             <td>@painting.StyleId</td>
                             <td>
                                 <a asp-page="Details" asp-route-id="@painting.PaintingId" class="btn btn-info btn-sm">Details</a>
-                                <a href="#" class="btn btn-danger btn-sm" 
-                                   onclick="confirmDelete('@painting.PaintingId', '@painting.PaintingName')">Delete</a>
                             </td>
                         </tr>
                     }
@@ -58,23 +70,8 @@
             </table>
         </div>
     }
-    else
+    else if (Model.SearchPerformed)
     {
-        <div class="alert alert-info">No paintings found.</div>
+        <div class="alert alert-info">No paintings found matching your search criteria.</div>
     }
 </div>
-
-<form id="deleteForm" method="post" asp-page-handler="Delete">
-    <input type="hidden" id="paintingIdToDelete" name="id" />
-</form>
-
-@section Scripts {
-    <script>
-        function confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete "${name}"?`)) {
-                document.getElementById('paintingIdToDelete').value = id;
-                document.getElementById('deleteForm').submit();
-            }
-        }
-    </script>
-}

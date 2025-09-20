@@ -1,0 +1,78 @@
+@page "{id}"
+@model RazorPage.WebApp.Pages.DetailsModel
+@{
+    ViewData["Title"] = "Painting Details";
+}
+
+<div class="container">
+    <h1 class="mt-4 mb-4">Painting Details</h1>
+    
+    <div class="mb-3">
+        <a asp-page="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+    
+    @if (Model.Painting != null)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3>@Model.Painting.PaintingName</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <dl class="row">
+                            <dt class="col-sm-3">ID:</dt>
+                            <dd class="col-sm-9">@Model.Painting.PaintingId</dd>
+                            
+                            <dt class="col-sm-3">Description:</dt>
+                            <dd class="col-sm-9">@Model.Painting.PaintingDescription</dd>
+                            
+                            <dt class="col-sm-3">Author:</dt>
+                            <dd class="col-sm-9">@Model.Painting.PaintingAuthor</dd>
+                            
+                            <dt class="col-sm-3">Price:</dt>
+                            <dd class="col-sm-9">@(Model.Painting.Price?.ToString("N0") ?? "N/A") VND</dd>
+                            
+                            <dt class="col-sm-3">Publish Year:</dt>
+                            <dd class="col-sm-9">@(Model.Painting.PublishYear ?? 0)</dd>
+                            
+                            <dt class="col-sm-3">Created Date:</dt>
+                            <dd class="col-sm-9">@(Model.Painting.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</dd>
+                            
+                            <dt class="col-sm-3">Style ID:</dt>
+                            <dd class="col-sm-9">@Model.Painting.StyleId</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="btn btn-danger" 
+                   onclick="confirmDelete('@Model.Painting.PaintingId', '@Model.Painting.PaintingName')">Delete</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">Painting not found.</div>
+    }
+</div>
+
+<form id="deleteForm" method="post" asp-page="Index" asp-page-handler="Delete">
+    <input type="hidden" id="paintingIdToDelete" name="id" />
+</form>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            if (confirm(`Are you sure you want to delete "${name}"?`)) {
+                document.getElementById('paintingIdToDelete').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
