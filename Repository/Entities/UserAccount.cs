@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Repository.Entities;
 
-namespace Repository.Entities;
-
-public partial class UserAccount
+public class UserAccount
 {
     public int UserAccountId { get; set; }
 

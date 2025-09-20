@@ -21,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 static IEdmModel GetEdmModel()
 {
     var odataBuilder = new ODataConventionModelBuilder();
@@ -45,9 +46,9 @@ builder.Services.AddScoped<UserAccountRepo>();
 builder.Services.AddScoped<WatercolorsPaintingRepo>();
 builder.Services.AddScoped<IWatercolorsPaintingService, WatercolorsPaintingService>();
 
-    //validator
-    builder.Services.AddScoped<IValidator<WatercolorsPainting>, WatercolorsPaintingValidator>();
-    builder.Services.AddValidatorsFromAssemblyContaining<WatercolorsPaintingValidator>();
+//validator
+builder.Services.AddScoped<IValidator<WatercolorsPainting>, WatercolorsPaintingValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<WatercolorsPaintingValidator>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>
 {
@@ -91,11 +92,11 @@ builder.Services.AddSwaggerGen(option =>
             {
                 Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
-            new string[]{}
+            new string[] { }
         }
     });
 });

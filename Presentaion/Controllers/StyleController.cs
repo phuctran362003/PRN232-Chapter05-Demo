@@ -1,6 +1,5 @@
-﻿namespace Presentaion.Controllers
+﻿namespace Presentaion.Controllers;
+
+public class StyleController
 {
-    public class StyleController
-    {
-    }
 }

@@ -1,8 +1,7 @@
 ﻿using Service.Interfaces;
 
-namespace Service.Services
+namespace Service.Services;
+
+public class StyleService : IStyleService
 {
-    public class StyleService : IStyleService
-    {
-    }
 }

@@ -2,10 +2,9 @@
 
 namespace Repository.Entities;
 
-public partial class Style
+public class Style
 {
-    [Key]
-    public string StyleId { get; set; } = null!;
+    [Key] public string StyleId { get; set; } = null!;
 
     public string StyleName { get; set; } = null!;
 
@@ -13,5 +12,6 @@ public partial class Style
 
     public string? OriginalCountry { get; set; }
 
-    public virtual ICollection<WatercolorsPainting> WatercolorsPaintings { get; set; } = new List<WatercolorsPainting>();
+    public virtual ICollection<WatercolorsPainting> WatercolorsPaintings { get; set; } =
+        new List<WatercolorsPainting>();
 }

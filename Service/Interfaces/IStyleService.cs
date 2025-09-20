@@ -1,6 +1,5 @@
-﻿namespace Service.Interfaces
+﻿namespace Service.Interfaces;
+
+public interface IStyleService
 {
-    public interface IStyleService
-    {
-    }
 }

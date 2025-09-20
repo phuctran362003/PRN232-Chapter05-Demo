@@ -1,9 +1,8 @@
 ﻿using Repository.Entities;
 
-namespace Service.Interfaces
+namespace Service.Interfaces;
+
+public interface IUserAccountService
 {
-    public interface IUserAccountService
-    {
-        public Task<UserAccount> Authenticate(string username, string password);
-    }
+    public Task<UserAccount> Authenticate(string username, string password);
 }
