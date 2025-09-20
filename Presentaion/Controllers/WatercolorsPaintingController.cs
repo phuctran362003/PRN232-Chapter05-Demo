@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Repository.Entities;
 using Service.Interfaces;
 
-namespace Presentation.Controllers
+namespace Presentaion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
