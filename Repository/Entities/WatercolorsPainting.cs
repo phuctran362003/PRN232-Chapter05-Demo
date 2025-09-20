@@ -22,7 +22,7 @@ public class WatercolorsPainting
     [DefaultValue(typeof(DateTime), "2023-05-20")]
     public DateTime? CreatedDate { get; set; } = new DateTime(2023, 5, 20);
 
-    [DefaultValue("STYLE01")] public string? StyleId { get; set; } = "STYLE01";
+    [DefaultValue("SS00112")] public string? StyleId { get; set; } = "SS00112";
 
     [JsonIgnore]
     public virtual Style? Style { get; set; }

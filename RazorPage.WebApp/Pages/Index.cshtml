@@ -33,7 +33,7 @@
                         <th>Author</th>
                         <th>Price</th>
                         <th>Year</th>
-                        <th>Style ID</th>
+                        <th>Style</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -46,7 +46,7 @@
                             <td>@painting.PaintingAuthor</td>
                             <td>@(painting.Price?.ToString("N0") ?? "N/A")</td>
                             <td>@(painting.PublishYear ?? 0)</td>
-                            <td>@painting.StyleId</td>
+                            <td>@(painting.StyleName ?? painting.Style?.StyleName ?? painting.StyleId)</td>
                             <td>
                                 <a asp-page="Details" asp-route-id="@painting.PaintingId" class="btn btn-info btn-sm">Details</a>
                                 <a href="#" class="btn btn-danger btn-sm" 

@@ -44,6 +44,16 @@ namespace RazorPage.WebApp.Pages
                         return Page();
                     }
                     
+                    // Set the Style object based on the StyleName property
+                    if (!string.IsNullOrEmpty(Painting.StyleName))
+                    {
+                        Painting.Style = new Style
+                        {
+                            StyleId = Painting.StyleId ?? string.Empty,
+                            StyleName = Painting.StyleName
+                        };
+                    }
+                    
                     return Page();
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)

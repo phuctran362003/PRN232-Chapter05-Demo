@@ -1,0 +1,104 @@
+Script thuyết trình: 
+Chào mừng các bạn đến với buổi thuyết trình hôm nay về ba khái niệm cốt lõi trong phát triển ứng dụng web với ASP.NET Core: Routing, Model Binding, và Model Validation. Đây là những thành phần quan trọng giúp chúng ta xử lý các yêu cầu HTTP một cách hiệu quả và an toàn. Chúng ta sẽ cùng nhau khám phá chi tiết từng phần này trong khoảng 10-15 phút tới.
+
+Phần 1: Routing (Định tuyến)
+(Thời lượng ước tính: 3-5 phút)
+Chào các bạn, chúng ta hãy bắt đầu với Routing, hay còn gọi là Định tuyến. Các bạn có bao giờ tự hỏi làm thế nào mà khi chúng ta gõ một URL vào trình duyệt, ASP.NET Core lại biết phải chạy đoạn code nào, hay trả về trang nào không? Đó chính là công việc của Routing!
+Routing là gì? Đơn giản mà nói, Routing là quá trình ASP.NET Core phân tích URL của một yêu cầu HTTP đến và quyết định xem tài nguyên nào (ví dụ: một hành động trong Controller, một Razor Page, hoặc một file tĩnh) sẽ xử lý yêu cầu đó. Nó giống như một "người điều phối" giao thông, hướng dẫn mỗi yêu cầu đi đúng nơi cần đến.
+Làm thế nào để bật Routing trong ASP.NET Core? Để kích hoạt tính năng Routing trong ASP.NET Core Web API, chúng ta cần thêm hai thành phần middleware quan trọng vào pipeline xử lý yêu cầu HTTP:
+UseRouting(): Middleware này có nhiệm vụ cho phép ứng dụng của bạn sử dụng tính năng định tuyến. Nó sẽ đọc và phân tích URL, sau đó lưu trữ kết quả dưới dạng "route values" (các giá trị định tuyến). Hãy nhớ, UseRouting() chỉ bật Routing thôi, chứ chưa tự động "map" URL nào đến tài nguyên nào cả.
+UseEndpoints(): Sau khi UseRouting() đã phân tích xong, UseEndpoints() sẽ dựa vào các "route values" đó để quyết định tài nguyên cụ thể nào sẽ xử lý cuộc gọi. Tài nguyên ở đây có thể là một action method trong controller của bạn, một Razor Page, hoặc thậm chí là một file tĩnh nào đó.
+Quan trọng: Nếu thiếu một trong hai middleware này, không có Controller nào của bạn có thể chạy được cả. Chúng là cặp bài trùng không thể thiếu!
+Attribute Routing (Định tuyến bằng Attribute) Trong ASP.NET Core Web API, Attribute Routing là cách được ưa chuộng nhất để định nghĩa các route. Thay vì phải khai báo route ở một chỗ tập trung, chúng ta có thể gắn trực tiếp các attribute như [Route], [HttpGet], [HttpPost] lên các controller hoặc action method.
+Với Attribute Routing, chúng ta định nghĩa các "template string" có thể chứa các đoạn cố định và các "token" (biến).
+Bạn có thể truyền các giá trị động vào URL bằng cách sử dụng dấu ngoặc nhọn {}. Ví dụ: /products/{id}. Bạn cũng có thể truyền nhiều giá trị động.
+Thậm chí, một tài nguyên (ví dụ: một action method) có thể được truy cập qua nhiều URL khác nhau.
+Luồng hoạt động (tóm tắt): Khi một yêu cầu HTTP đến, bước đầu tiên trong pipeline là UseRouting(), sau đó nó tạo ra Route Values.
+Điều gì xảy ra nếu Routing thất bại? Nếu không có route nào khớp với URL của yêu cầu, hệ thống sẽ trả về mã trạng thái HTTP 404 Not Found ngay lập tức.
+
+Phần 2: Model Binding (Gắn kết Model)
+(Thời lượng ước tính: 3-5 phút)
+Sau khi Routing đã tìm thấy action method phù hợp, bước tiếp theo là Model Binding. Đây là một khái niệm cực kỳ hữu ích, giúp chúng ta không phải tự tay "mổ xẻ" các request HTTP để lấy dữ liệu.
+Model Binding là gì? Model Binding là quá trình mà ASP.NET Core framework trích xuất dữ liệu từ các yêu cầu HTTP và cung cấp chúng cho các tham số của action method. Nó diễn ra sau khi quá trình Routing hoàn tất. Tưởng tượng bạn có một hàm public IActionResult CreateProduct(ProductDto product) thì Model Binding sẽ có nhiệm vụ "đổ đầy" dữ liệu từ HTTP request vào đối tượng product đó.
+Nguồn dữ liệu mà Model Binder tìm kiếm: Framework sẽ tìm kiếm giá trị cho các tham số của action method ở ba nơi chính:
+Form data values (Dữ liệu từ form)
+Routing variables (Các biến từ URL đã được Routing phân tích, ví dụ: {id})
+Query strings (Các tham số trên URL, ví dụ: ?sort=desc)
+Kiểm soát nguồn dữ liệu rõ ràng với các Attribute: Đôi khi bạn muốn ép buộc binder đọc dữ liệu từ một phần cụ thể của request. Bạn có thể sử dụng các attribute sau:
+[FromRoute]: Ép buộc lấy giá trị từ các biến trong route (ví dụ: /items/5).
+[FromQuery]: Ép buộc lấy giá trị từ query string (ví dụ: ?sort=desc).
+[FromBody]: Ép buộc lấy giá giá trị từ phần thân của yêu cầu (thường là JSON, XML, hoặc protobuf payload).
+[FromForm]: Ép buộc lấy giá trị từ dữ liệu form (ví dụ: multipart/form-data).
+Thứ tự tìm kiếm mặc định: Nếu không có attribute nào được chỉ định, Model Binder sẽ tuân theo thứ tự tìm kiếm sau: route → query → form → body.
+Các loại Model Binder: Chúng ta có hai loại Model Binder chính:
+Primitive Model Binder:
+Xử lý các request đơn giản, nơi các tham số đầu vào thuộc các kiểu dữ liệu nguyên thủy như int, string, bool, decimal, Guid, DateTime, v.v..
+Dữ liệu thường có sẵn trong URL (ví dụ: qua query string).
+Mặc định được sử dụng cho các phương thức HTTP như GET và DELETE, khi bạn chỉ cần gửi một lượng nhỏ tham số.
+Complex Model Binder:
+Xử lý các request phức tạp, nơi chúng ta truyền dữ liệu dưới dạng một đối tượng (entity) trong phần thân của yêu cầu (request body) với một kiểu Content-Type mong muốn.
+Dữ liệu không có sẵn qua query string.
+Mặc định được sử dụng cho các phương thức HTTP như POST và PUT, khi bạn cần gửi toàn bộ một đối tượng/model đến server.
+Linh hoạt: Các phương thức POST và PUT cũng có thể sử dụng kết hợp giữa Primitive và Complex type. Ví dụ: bạn có thể truyền Id trong query string và dữ liệu cần cập nhật trong request body.
+Cách hoạt động với Complex Types: Khi tham số của action method là một kiểu phức tạp (ví dụ: một đối tượng của một lớp), quá trình Model Binding sẽ lấy tất cả các thuộc tính công khai có thể set được (public settable property) của kiểu phức tạp đó và điền dữ liệu cho từng thuộc tính từ các "key" khớp trong request.
+Giá trị mặc định: Nếu không tìm thấy giá trị khớp cho một tham số nào đó, tham số đó sẽ nhận giá trị mặc định của kiểu dữ liệu của nó:
+0 cho int
+null cho các kiểu tham chiếu (reference types)
+false cho bool
+"" (chuỗi rỗng) cho string
+01-01-0001 00:00:00 cho DateTime
+Khả năng mở rộng: Model Binding cũng hỗ trợ gắn kết dữ liệu cho các kiểu Array và Collection (kể cả Collection chứa các Complex Type).
+Luồng hoạt động (tóm tắt): Sau khi có Route Values, bước tiếp theo là Model Binding.
+Điều gì xảy ra nếu Model Binding thất bại? Nếu quá trình gắn kết dữ liệu không thành công (ví dụ: lỗi chuyển đổi kiểu dữ liệu), hệ thống sẽ trả về mã trạng thái HTTP 400 Bad Request ngay lập tức.
+
+Phần 3: Model Validation (Xác thực Model)
+(Thời lượng ước tính: 3-5 phút)
+Sau khi dữ liệu đã được Model Binding "đổ đầy" vào các đối tượng, bước cuối cùng nhưng không kém phần quan trọng là Model Validation. Đây là hàng rào bảo vệ đầu tiên cho ứng dụng của bạn.
+Model Validation là gì? Model Validation là quá trình kiểm tra tính hợp lệ của dữ liệu đã được Model Binding. Nó diễn ra trước khi code action của bạn được chạy. Mục đích là để đảm bảo dữ liệu mà người dùng gửi lên là hợp lệ, đáng tin cậy và an toàn cho ứng dụng của bạn.
+Cách thức hoạt động: Validation chủ yếu sử dụng DataAnnotations (các attribute) được khai báo trên các lớp model của bạn. Các DataAnnotation phổ biến bao gồm:
+[Required]: Đảm bảo trường không được null.
+[StringLength(maxLength)]: Giới hạn độ dài chuỗi.
+[Range(min, max)]: Đảm bảo giá trị nằm trong một khoảng nhất định.
+[EmailAddress]: Kiểm tra định dạng email.
+[Url]: Kiểm tra định dạng URL.
+[Compare]: So sánh giá trị của hai thuộc tính.
+[RegularExpression]: So khớp với một biểu thức chính quy.
+[ValidateNever]: Loại trừ một thuộc tính khỏi quá trình validation.
+Validation tùy chỉnh (Custom Logic): Nếu các DataAnnotation có sẵn không đủ, bạn có thể tạo logic validation tùy chỉnh bằng cách tạo một lớp kế thừa từ ValidationAttribute và override phương thức IsValid. Phương thức IsValid nhận đối tượng value cần được kiểm tra, và một overload khác còn nhận thêm đối tượng ValidationContext cung cấp thông tin chi tiết hơn.
+Quy trình Validation điển hình:
+Một JSON payload được gửi đến controller.
+Model Binder xây dựng đối tượng CreateProductDto.
+Validator kiểm tra từng thuộc tính đã được trang trí (decorated property).
+Nếu bất kỳ quy tắc nào thất bại, middleware sẽ "short-circuit" (ngắt ngắn mạch), có nghĩa là action method của bạn sẽ không bao giờ được chạy.
+Trong trường hợp đó, ModelState.IsValid sẽ trở thành false, và hành vi API mặc định là trả về HTTP 400 Bad Request với một problem-details body chi tiết lỗi.
+Nếu tất cả các quy tắc hợp lệ, action method của bạn sẽ được thực thi với một đối tượng đã được điền đầy đủ và đáng tin cậy.
+Model State: Model state đại diện cho các lỗi phát sinh từ hai hệ thống con: Model Binding (thường là lỗi chuyển đổi dữ liệu) và Model Validation. Cả hai quá trình này đều xảy ra trước khi action của controller hoặc handler của Razor Pages được thực thi.
+Validation phía Server (Server-Side Validation):
+Đây là validation cốt lõi, xảy ra trên server trước khi action của MVC controller được chạy.
+Bạn luôn phải kiểm tra ModelState.IsValid trong code của mình trước khi thực hiện các bước logic tiếp theo để đảm bảo dữ liệu là hợp lệ.
+Validation phía Client (Client-Side Validation):
+Validation này chạy trên trình duyệt (client-side) bằng JavaScript.
+Nó ngăn chặn việc gửi form cho đến khi form hợp lệ, hiển thị các thông báo lỗi ngay lập tức mà không cần gửi request lên server.
+Ưu điểm lớn là tránh được một chuyến đi không cần thiết đến server khi có lỗi nhập liệu, cải thiện trải nghiệm người dùng. Các thư viện như jQuery Validation và jQuery Validation Unobtrusive thường được sử dụng cho mục đích này.
+Chạy lại Validation: Trong một số trường hợp, bạn có thể cần tính toán lại một giá trị và muốn chạy lại validation cho thuộc tính đó. Bạn có thể gọi ModelStateDictionary.ClearValidationState để xóa trạng thái validation cũ, sau đó gọi TryValidateModel.
+Luồng hoạt động (tóm tắt): Sau khi Model Binding, bước tiếp theo là Validation.
+Điều gì xảy ra nếu Model Validation thất bại? Nếu validation thất bại, hệ thống cũng sẽ trả về mã trạng thái HTTP 400 Bad Request ngay lập tức.
+
+Kết luận và Luồng hoạt động tổng thể
+(Thời lượng ước tính: 1-2 phút)
+Như vậy, chúng ta đã đi qua ba trụ cột quan trọng trong ASP.NET Core: Routing, Model Binding, và Model Validation. Chúng hoạt động liền mạch với nhau để tạo nên một luồng xử lý yêu cầu HTTP chặt chẽ và an toàn.
+Hãy cùng nhìn lại luồng hoạt động từ đầu đến cuối:
+HTTP Request: Một yêu cầu HTTP được gửi đến ứng dụng của bạn.
+UseRouting(): Middleware định tuyến phân tích URL và tạo ra Route Values.
+Model Binding: Framework sử dụng các Route Values cùng với dữ liệu từ query string, form, hoặc request body để xây dựng và "đổ đầy" dữ liệu vào các tham số của action method.
+Validation: Các đối tượng đã được Model Binding sau đó được xác thực theo các quy tắc DataAnnotations và logic tùy chỉnh.
+Action Execution: Nếu mọi thứ đều hợp lệ, code trong action method của bạn sẽ được thực thi.
+HTTP Response: Cuối cùng, một phản hồi HTTP được gửi trả lại client.
+Quan trọng: Ở mỗi giai đoạn thất bại, điều khiển sẽ được trả về ngay lập tức với mã trạng thái phù hợp:
+404 Not Found: Nếu không có route nào khớp.
+400 Bad Request: Nếu Model Binding hoặc Validation thất bại.
+200/201/204: Tùy thuộc vào hành động của bạn khi thành công.
+Hiểu rõ ba khái niệm này không chỉ giúp chúng ta xây dựng các ứng dụng ASP.NET Core hiệu quả hơn mà còn an toàn hơn.
+Cảm ơn các bạn đã lắng nghe!
+
+Để tiếp tục cuộc trò chuyện, bạn có muốn tìm hiểu sâu hơn về các thuộc tính DataAnnotation cụ thể được sử dụng trong Model Validation không?

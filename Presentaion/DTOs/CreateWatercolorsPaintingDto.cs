@@ -25,7 +25,7 @@ namespace Presentaion.DTOs
         public DateTime? CreatedDate { get; set; } = new DateTime(2023, 5, 20);
 
         [Required]
-        [DefaultValue("STYLE01")]
-        public string StyleId { get; set; } = "STYLE01";
+        [DefaultValue("SS00112")]
+        public string StyleId { get; set; } = "SS00112";
     }
 }

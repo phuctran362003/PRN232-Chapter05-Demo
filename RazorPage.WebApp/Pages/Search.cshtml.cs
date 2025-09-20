@@ -50,6 +50,19 @@ namespace RazorPage.WebApp.Pages
                         var content = await response.Content.ReadAsStringAsync();
                         Paintings = JsonSerializer.Deserialize<List<WatercolorsPainting>>(content, 
                             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<WatercolorsPainting>();
+                            
+                        // Set the Style object for each painting based on the StyleName property
+                        foreach (var painting in Paintings)
+                        {
+                            if (!string.IsNullOrEmpty(painting.StyleName))
+                            {
+                                painting.Style = new Style
+                                {
+                                    StyleId = painting.StyleId ?? string.Empty,
+                                    StyleName = painting.StyleName
+                                };
+                            }
+                        }
                     }
                     else
                     {

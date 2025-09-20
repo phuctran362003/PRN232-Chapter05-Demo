@@ -44,8 +44,8 @@
                             <dt class="col-sm-3">Created Date:</dt>
                             <dd class="col-sm-9">@(Model.Painting.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</dd>
                             
-                            <dt class="col-sm-3">Style ID:</dt>
-                            <dd class="col-sm-9">@Model.Painting.StyleId</dd>
+                            <dt class="col-sm-3">Style:</dt>
+                            <dd class="col-sm-9">@(Model.Painting.StyleName ?? Model.Painting.Style?.StyleName ?? Model.Painting.StyleId)</dd>
                         </dl>
                     </div>
                 </div>

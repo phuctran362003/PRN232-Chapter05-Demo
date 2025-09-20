@@ -16,64 +16,111 @@ public class WatercolorsPaintingController : Controller
     {
         _watercolorsPaintingService = watercolorsPaintingService;
     }
+    
+    // Helper method to map Entity to DTO to avoid code duplication
+    private WatercolorsPaintingResponseDto MapToDto(WatercolorsPainting painting)
+    {
+        return new WatercolorsPaintingResponseDto
+        {
+            PaintingId = painting.PaintingId,
+            PaintingName = painting.PaintingName,
+            PaintingDescription = painting.PaintingDescription,
+            PaintingAuthor = painting.PaintingAuthor,
+            Price = painting.Price,
+            PublishYear = painting.PublishYear,
+            CreatedDate = painting.CreatedDate,
+            StyleId = painting.StyleId,
+            StyleName = painting.Style?.StyleName
+        };
+    }
 
     [HttpGet("search")]
-    public async Task<IEnumerable<WatercolorsPainting>> Get(string? author, int? date)
+    public async Task<IEnumerable<WatercolorsPaintingResponseDto>> Get(string? author, int? date)
     {
         var searchResults = await _watercolorsPaintingService.Search(date, author);
         
         // Sắp xếp các item theo CreatedDate giảm dần (mới nhất lên đầu)
-        return searchResults.OrderByDescending(p => p.CreatedDate);
+        return searchResults.OrderByDescending(p => p.CreatedDate)
+            .Select(MapToDto);
     }
 
     [HttpGet]
     [EnableQuery]
-    public async Task<IEnumerable<WatercolorsPainting>> Get()
+    public async Task<IEnumerable<WatercolorsPaintingResponseDto>> Get()
     {
         var paintings = await _watercolorsPaintingService.GetAll();
         
         // Sắp xếp các item theo CreatedDate giảm dần (mới nhất lên đầu)
-        return paintings.OrderByDescending(p => p.CreatedDate);
+        return paintings.OrderByDescending(p => p.CreatedDate)
+            .Select(MapToDto);
     }
 
 
     [HttpGet("{id}")]
-    public async Task<WatercolorsPainting> Get(string id)
+    public async Task<ActionResult<WatercolorsPaintingResponseDto>> Get(string id)
     {
-        return await _watercolorsPaintingService.GetById(id);
+        try
+        {
+            var painting = await _watercolorsPaintingService.GetById(id);
+            if (painting == null)
+            {
+                return NotFound($"Painting with ID {id} not found");
+            }
+            return MapToDto(painting);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Post(CreateWatercolorsPaintingDto createDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
-        // Tạo mới đối tượng WatercolorsPainting từ DTO
-        var watercolorsPainting = new WatercolorsPainting
+        // Improved model state validation with detailed error messages
+        if (!ModelState.IsValid)
         {
-            // Tự động tạo ID (sử dụng timestamp để đảm bảo tính duy nhất)
-            PaintingId = $"P{DateTime.Now:yyyyMMddHHmmss}",
-            PaintingName = createDto.PaintingName,
-            PaintingDescription = createDto.PaintingDescription,
-            PaintingAuthor = createDto.PaintingAuthor,
-            Price = createDto.Price,
-            PublishYear = createDto.PublishYear,
-            CreatedDate = createDto.CreatedDate ?? DateTime.Now,
-            StyleId = createDto.StyleId
-        };
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            
+            return BadRequest(new { Errors = errors });
+        }
 
-        var result = await _watercolorsPaintingService.CreateWithValidation(watercolorsPainting);
-        if (result.Contains("Thêm Thành công"))
-            return Ok(new
+        try
+        {
+            // Tạo mới đối tượng WatercolorsPainting từ DTO
+            var watercolorsPainting = new WatercolorsPainting
             {
-                Message = "Create successful",
-                Data = result
-            });
-        return BadRequest(new
+                // Using the service's ID generation method for consistency
+                PaintingName = createDto.PaintingName,
+                PaintingDescription = createDto.PaintingDescription,
+                PaintingAuthor = createDto.PaintingAuthor,
+                Price = createDto.Price,
+                PublishYear = createDto.PublishYear,
+                CreatedDate = createDto.CreatedDate ?? DateTime.Now,
+                StyleId = createDto.StyleId
+            };
+
+            // Use the CreateWithValidation method which performs FluentValidation
+            var result = await _watercolorsPaintingService.CreateWithValidation(watercolorsPainting);
+            
+            // Check if result is an error message (string contains validation errors)
+            if (result != "Thêm Thành công")
+            {
+                return BadRequest(new { 
+                    Message = "Validation failed",
+                    Errors = result 
+                });
+            }
+            
+            return CreatedAtAction(nameof(Get), new { id = watercolorsPainting.PaintingId }, MapToDto(watercolorsPainting));
+        }
+        catch (Exception ex)
         {
-            Message = "Validation failed",
-            Errors = result
-        });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     //[HttpPut()]
@@ -97,8 +144,20 @@ public class WatercolorsPaintingController : Controller
     //}
 
     [HttpDelete("{id}")]
-    public async Task<bool> Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
-        return await _watercolorsPaintingService.Delete(id);
+        try
+        {
+            var result = await _watercolorsPaintingService.Delete(id);
+            if (result)
+            {
+                return Ok(new { Message = $"Painting with ID {id} deleted successfully" });
+            }
+            return NotFound(new { Message = $"Painting with ID {id} not found" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = $"Internal server error: {ex.Message}" });
+        }
     }
 }

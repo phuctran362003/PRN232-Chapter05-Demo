@@ -26,6 +26,6 @@ namespace RazorPage.WebApp.Models
 
         [Required(ErrorMessage = "Style ID is required")]
         [Display(Name = "Style ID")]
-        public string StyleId { get; set; } = "STYLE01";
+        public string StyleId { get; set; } = "SS00112";
     }
 }
