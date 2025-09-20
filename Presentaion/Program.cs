@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
@@ -36,7 +37,8 @@ builder.Services.AddControllers().AddOData(options =>
 
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<WatercolorsPainting2024DbContext>();
+builder.Services.AddDbContext<WatercolorsPainting2024DbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<UserAccountRepo>();
@@ -98,6 +100,21 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 var app = builder.Build();
+
+// Test database connection
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<WatercolorsPainting2024DbContext>();
+        await dbContext.Database.CanConnectAsync();
+        Console.WriteLine("✅ Database connection successful!");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"❌ Database connection failed: {ex.Message}");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

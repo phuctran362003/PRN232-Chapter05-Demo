@@ -18,13 +18,11 @@ namespace Presentaion.Controllers
         }
 
         [HttpGet("search")]
-        [Authorize(Roles = "1,2")]
         public async Task<IEnumerable<WatercolorsPainting>> Get(string? author, int? date)
         {
             return await _watercolorsPaintingService.Search(date, author);
         }
         [HttpGet]
-        [Authorize(Roles = "1,2")]
         [EnableQuery]
         public async Task<IEnumerable<WatercolorsPainting>> Get()
         {
@@ -33,15 +31,12 @@ namespace Presentaion.Controllers
 
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "1,2")]
-
         public async Task<WatercolorsPainting> Get(string id)
         {
             return await _watercolorsPaintingService.GetById(id);
         }
 
         [HttpPost]
-        [Authorize(Roles = "1")]
         public async Task<IActionResult> Post(WatercolorsPainting transaction)
         {
             if (!ModelState.IsValid)
@@ -86,7 +81,6 @@ namespace Presentaion.Controllers
         //}
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "1")]
         public async Task<bool> Delete(string id)
         {
             return await _watercolorsPaintingService.Delete(id);

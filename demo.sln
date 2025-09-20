@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentaion", "Presentaion\Presentaion.csproj", "{49E03AD6-21FA-415E-8D69-26134EA36C94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorPage.WebApp", "RazorPage.WebApp\RazorPage.WebApp.csproj", "{26C23774-B091-45A9-A509-C936463DDCF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{49E03AD6-21FA-415E-8D69-26134EA36C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49E03AD6-21FA-415E-8D69-26134EA36C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49E03AD6-21FA-415E-8D69-26134EA36C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C23774-B091-45A9-A509-C936463DDCF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C23774-B091-45A9-A509-C936463DDCF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C23774-B091-45A9-A509-C936463DDCF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C23774-B091-45A9-A509-C936463DDCF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
