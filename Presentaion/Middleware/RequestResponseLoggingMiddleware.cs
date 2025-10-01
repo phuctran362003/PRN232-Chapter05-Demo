@@ -50,19 +50,19 @@ public class RequestResponseLoggingMiddleware
         var queryString = context.Request.QueryString;
         var routeValues = context.Request.RouteValues;
 
-        Console.WriteLine($"🧭 ROUTING: Request received - {requestMethod} {requestPath}{queryString}");
+        Console.WriteLine($"[ROUTING] Request received - {requestMethod} {requestPath}{queryString}");
 
         // Log route values if any
         if (routeValues != null && routeValues.Count > 0)
         {
-            Console.WriteLine("🧭 ROUTING: Route values:");
+            Console.WriteLine("[ROUTING] Route values:");
             foreach (var routeValue in routeValues) Console.WriteLine($"   - {routeValue.Key}: {routeValue.Value}");
         }
 
         // Log query parameters
         if (queryString.HasValue && queryString.Value.Length > 1)
         {
-            Console.WriteLine("📦 MODEL BINDING: Query parameters:");
+            Console.WriteLine("[MODEL BINDING] Query parameters:");
             foreach (var query in context.Request.Query) Console.WriteLine($"   - {query.Key}: {query.Value}");
         }
 
@@ -76,7 +76,7 @@ public class RequestResponseLoggingMiddleware
             var requestBody = Encoding.UTF8.GetString(buffer);
             context.Request.Body.Position = 0;
 
-            Console.WriteLine($"📦 MODEL BINDING: Request body (from {context.Request.ContentType}):");
+            Console.WriteLine($"[MODEL BINDING] Request body (from {context.Request.ContentType}):");
             Console.WriteLine($"   {requestBody}");
         }
     }
@@ -88,12 +88,12 @@ public class RequestResponseLoggingMiddleware
         var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
 
         // Log response details
-        Console.WriteLine($"🧭 ROUTING: Response - Status Code {context.Response.StatusCode}");
+        Console.WriteLine($"[ROUTING] Response - Status Code {context.Response.StatusCode}");
 
         // Check if it's a validation error (400)
         if (context.Response.StatusCode == 400 && !string.IsNullOrEmpty(responseBody))
         {
-            Console.WriteLine("✅ VALIDATION: Validation failed with the following errors:");
+            Console.WriteLine("[VALIDATION] Validation failed with the following errors:");
             Console.WriteLine($"   {responseBody}");
         }
 

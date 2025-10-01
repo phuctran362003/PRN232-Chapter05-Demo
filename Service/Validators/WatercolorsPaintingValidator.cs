@@ -7,7 +7,7 @@ public class WatercolorsPaintingValidator : AbstractValidator<WatercolorsPaintin
 {
     public WatercolorsPaintingValidator()
     {
-        Console.WriteLine("⚙️ FLUENT VALIDATOR: Initializing WatercolorsPaintingValidator with validation rules");
+        Console.WriteLine("[FLUENT VALIDATOR] Initializing WatercolorsPaintingValidator with validation rules");
 
         // Set our cascade mode to continue on validation failures so all rules are evaluated
         CascadeMode = CascadeMode.Continue;

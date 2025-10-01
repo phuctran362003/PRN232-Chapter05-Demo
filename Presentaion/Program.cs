@@ -35,7 +35,7 @@ builder.Services.AddControllers(options =>
         options.InvalidModelStateResponseFactory = context =>
         {
             // Log all validation errors
-            Console.WriteLine($"❌ MODEL VALIDATION: Failed with {context.ModelState.ErrorCount} errors:");
+            Console.WriteLine($"[MODEL VALIDATION] Failed with {context.ModelState.ErrorCount} errors:");
             foreach (var state in context.ModelState)
             foreach (var error in state.Value.Errors)
                 Console.WriteLine($"   - Property '{state.Key}': {error.ErrorMessage}");
@@ -149,7 +149,7 @@ try
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Database connection failed: {ex.Message}");
+    Console.WriteLine($"[ERROR] Database connection failed: {ex.Message}");
 }
 
 // Configure the HTTP request pipeline.
@@ -161,33 +161,27 @@ if (app.Environment.IsDevelopment())
 
 // Log startup information about the logging implementation
 Console.WriteLine("======================================================================");
-Console.WriteLine("💡 LOGGING IMPLEMENTATION FOR ASP.NET CORE FLOW VISUALIZATION");
+Console.WriteLine("LOGGING IMPLEMENTATION FOR ASP.NET CORE FLOW VISUALIZATION");
 Console.WriteLine("======================================================================");
-Console.WriteLine("✅ Routing logs: Shows how URL paths are matched to controller actions");
-Console.WriteLine("✅ Model Binding logs: Shows how data from HTTP request is bound to C# objects");
-Console.WriteLine("✅ Validation logs: Shows both Data Annotation and FluentValidation processes");
-Console.WriteLine("✅ Repository logs: Shows database operations and query processing");
+Console.WriteLine("[ROUTING] Shows how URL paths are matched to controller actions");
+Console.WriteLine("[MODEL BINDING] Shows how data from HTTP request is bound to C# objects");
+Console.WriteLine("[VALIDATION] Shows both Data Annotation and FluentValidation processes");
+Console.WriteLine("[REPOSITORY] Shows database operations and query processing");
 Console.WriteLine("======================================================================");
-Console.WriteLine("🔍 Look for these log prefixes to understand the flow:");
-Console.WriteLine("   🧭 ROUTING: URL pattern matching and route determination");
-Console.WriteLine("   📦 MODEL BINDING: Parameter binding from route/query/body");
-Console.WriteLine("   ✅ VALIDATION: Data validation using annotations and FluentValidation");
-Console.WriteLine("   🔍 CONTROLLER/SERVICE: Business logic flow");
-Console.WriteLine("   💾 REPOSITORY: Database interactions");
-Console.WriteLine("   ⌛ PERFORMANCE: Timing information for operations");
+Console.WriteLine("Look for these log prefixes to understand the flow:");
+Console.WriteLine("   [ROUTING] URL pattern matching and route determination");
+Console.WriteLine("   [MODEL BINDING] Parameter binding from route/query/body");
+Console.WriteLine("   [VALIDATION] Data validation using annotations and FluentValidation");
+Console.WriteLine("   [CONTROLLER/SERVICE] Business logic flow");
+Console.WriteLine("   [REPOSITORY] Database interactions");
+Console.WriteLine("   [PERFORMANCE] Timing information for operations");
 Console.WriteLine("======================================================================");
 
 app.UseHttpsRedirection();
 
 // Add logging middleware for routing
-app.Use(async (context, next) =>
-{
-    Console.WriteLine(
-        $"🧭 ROUTING: Request received for path {context.Request.Path} with method {context.Request.Method}");
-    await next();
-    Console.WriteLine(
-        $"🧭 ROUTING: Response completed for path {context.Request.Path} with status code {context.Response.StatusCode}");
-});
+// Use our logging middleware instead of the inline middleware
+app.UseMiddleware<Presentaion.Middleware.RequestResponseLoggingMiddleware>();
 
 app.UseAuthorization();
 
