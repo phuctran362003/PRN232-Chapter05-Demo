@@ -8,38 +8,40 @@ public class WatercolorsPaintingValidator : AbstractValidator<WatercolorsPaintin
     public WatercolorsPaintingValidator()
     {
         RuleFor(x => x.PaintingName)
-            .NotEmpty().WithMessage("WaterColor is required.") 
+            .NotEmpty().WithMessage("Tên tranh là bắt buộc.")
             // Bắt buộc PaintingName có giá trị (không null, không rỗng)
 
-            .Length(2, 80).WithMessage("WaterColor must be between 2 and 80 characters.") 
+            .Length(2, 80).WithMessage("Tên tranh phải có độ dài từ 2 đến 80 ký tự.")
             // PaintingName phải có độ dài từ 2 đến 80 ký tự
 
             .Matches(@"^([A-Z][a-z0-9@#]*)(\s[A-Z][a-z0-9@#]*)*$")
-            .WithMessage("Each word in WaterColor must begin with a capital letter and contain only valid characters.")
+            .WithMessage("Mỗi từ trong tên tranh phải bắt đầu bằng chữ hoa và chỉ chứa chữ thường, số, @ hoặc #.")
             // Mỗi từ trong PaintingName phải bắt đầu bằng chữ hoa, theo sau là chữ thường, số, @, # (nếu có)
 
             .Must(name => name == null || name.Trim() == name)
-            .WithMessage("WaterColor must not have leading or trailing spaces.");
-            // Không được có khoảng trắng thừa ở đầu hoặc cuối chuỗi
+            .WithMessage("Tên tranh không được có khoảng trắng ở đầu hoặc cuối.");
+        // Không được có khoảng trắng thừa ở đầu hoặc cuối chuỗi
 
 
         RuleFor(x => x.PaintingAuthor)
-            .NotEmpty().WithMessage("PaintingAuthor is required.") 
+            .NotEmpty().WithMessage("Tên tác giả là bắt buộc.")
             // Bắt buộc PaintingAuthor có giá trị
 
-            .Length(2, 80).WithMessage("PaintingAuthor must be between 2 and 80 characters.")
+            .Length(2, 80).WithMessage("Tên tác giả phải có độ dài từ 2 đến 80 ký tự.")
             // PaintingAuthor phải có độ dài từ 2 đến 80 ký tự
 
             .Matches(@"^([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)$")
-            .WithMessage("Each word in PaintingAuthor must begin with a capital letter and contain only letters.");
-            // Mỗi từ trong PaintingAuthor phải bắt đầu bằng chữ hoa và chỉ chứa chữ cái
+            .WithMessage("Mỗi từ trong tên tác giả phải bắt đầu bằng chữ hoa và chỉ chứa chữ cái.");
+        // Mỗi từ trong PaintingAuthor phải bắt đầu bằng chữ hoa và chỉ chứa chữ cái
 
 
         RuleFor(x => x.Price)
-            .GreaterThan(0).WithMessage("Price must be greater than 0.")
+            .GreaterThan(0).WithMessage("Giá phải lớn hơn 0.")
             // Giá trị Price phải > 0
+
             .Must(price => decimal.Round(price.Value, 2) == price)
-            .WithMessage("Price must have at most 2 decimal places.");
-            // Giá trị Price chỉ được phép có tối đa 2 chữ số thập phân
+            .WithMessage("Giá chỉ được phép có tối đa 2 chữ số thập phân.");
+        // Giá trị Price chỉ được phép có tối đa 2 chữ số thập phân
     }
+
 }
