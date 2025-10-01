@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Presentaion.DTOs;
 using Repository.Entities;
 using Service.Interfaces;
-using System.Diagnostics;
 
 namespace Presentaion.Controllers;
 
@@ -17,7 +17,7 @@ public class WatercolorsPaintingController : Controller
     {
         _watercolorsPaintingService = watercolorsPaintingService;
     }
-    
+
     // Helper method to map Entity to DTO to avoid code duplication
     private WatercolorsPaintingResponseDto MapToDto(WatercolorsPainting painting)
     {
@@ -39,16 +39,18 @@ public class WatercolorsPaintingController : Controller
     public async Task<IEnumerable<WatercolorsPaintingResponseDto>> Get(string? author, int? date)
     {
         Console.WriteLine($"🔍 CONTROLLER: Search method called with author={author}, date={date}");
-        Console.WriteLine($"🔄 ROUTING: Matched route 'api/WatercolorsPainting/search' with parameters from query string");
-        Console.WriteLine($"📦 MODEL BINDING: Parameters bound - author: '{author ?? "null"}', date: '{date?.ToString() ?? "null"}'");
-        
+        Console.WriteLine(
+            "🔄 ROUTING: Matched route 'api/WatercolorsPainting/search' with parameters from query string");
+        Console.WriteLine(
+            $"📦 MODEL BINDING: Parameters bound - author: '{author ?? "null"}', date: '{date?.ToString() ?? "null"}'");
+
         var stopwatch = Stopwatch.StartNew();
         var searchResults = await _watercolorsPaintingService.Search(date, author);
         stopwatch.Stop();
-        
+
         Console.WriteLine($"⌛ PERFORMANCE: Search operation completed in {stopwatch.ElapsedMilliseconds}ms");
         Console.WriteLine($"📊 RESULT: Found {searchResults.Count()} matching painting(s)");
-        
+
         // Sắp xếp các item theo CreatedDate giảm dần (mới nhất lên đầu)
         return searchResults.OrderByDescending(p => p.CreatedDate)
             .Select(MapToDto);
@@ -59,7 +61,7 @@ public class WatercolorsPaintingController : Controller
     public async Task<IEnumerable<WatercolorsPaintingResponseDto>> Get()
     {
         var paintings = await _watercolorsPaintingService.GetAll();
-        
+
         // Sắp xếp các item theo CreatedDate giảm dần (mới nhất lên đầu)
         return paintings.OrderByDescending(p => p.CreatedDate)
             .Select(MapToDto);
@@ -72,21 +74,21 @@ public class WatercolorsPaintingController : Controller
         Console.WriteLine($"🔍 CONTROLLER: Get by ID method called with id={id}");
         Console.WriteLine($"🔄 ROUTING: Matched route 'api/WatercolorsPainting/{id}' with parameter from route");
         Console.WriteLine($"📦 MODEL BINDING: Route value 'id' bound to parameter 'id' with value '{id}'");
-        
+
         try
         {
             var stopwatch = Stopwatch.StartNew();
             var painting = await _watercolorsPaintingService.GetById(id);
             stopwatch.Stop();
-            
+
             Console.WriteLine($"⌛ PERFORMANCE: GetById operation completed in {stopwatch.ElapsedMilliseconds}ms");
-            
+
             if (painting == null)
             {
                 Console.WriteLine($"⚠️ NOT FOUND: Painting with ID {id} not found");
                 return NotFound($"Painting with ID {id} not found");
             }
-            
+
             Console.WriteLine($"✅ SUCCESS: Found painting with ID {id}, name: {painting.PaintingName}");
             return MapToDto(painting);
         }
@@ -100,10 +102,11 @@ public class WatercolorsPaintingController : Controller
     [HttpPost]
     public async Task<IActionResult> Post(CreateWatercolorsPaintingDto createDto)
     {
-        Console.WriteLine($"🔍 CONTROLLER: Post method called with DTO: PaintingName='{createDto.PaintingName}', Author='{createDto.PaintingAuthor}', StyleId='{createDto.StyleId}'");
-        Console.WriteLine($"🔄 ROUTING: Matched route 'api/WatercolorsPainting' with HTTP POST");
-        Console.WriteLine($"📦 MODEL BINDING: CreateWatercolorsPaintingDto bound from request body (FromBody)");
-        
+        Console.WriteLine(
+            $"🔍 CONTROLLER: Post method called with DTO: PaintingName='{createDto.PaintingName}', Author='{createDto.PaintingAuthor}', StyleId='{createDto.StyleId}'");
+        Console.WriteLine("🔄 ROUTING: Matched route 'api/WatercolorsPainting' with HTTP POST");
+        Console.WriteLine("📦 MODEL BINDING: CreateWatercolorsPaintingDto bound from request body (FromBody)");
+
         // Improved model state validation with detailed error messages
         if (!ModelState.IsValid)
         {
@@ -111,22 +114,19 @@ public class WatercolorsPaintingController : Controller
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
                 .ToList();
-            
+
             Console.WriteLine($"❌ DATA ANNOTATION VALIDATION: Failed with {errors.Count} errors:");
-            foreach (var error in errors)
-            {
-                Console.WriteLine($"   - {error}");
-            }
-            
+            foreach (var error in errors) Console.WriteLine($"   - {error}");
+
             return BadRequest(new { Errors = errors });
         }
 
-        Console.WriteLine($"✅ DATA ANNOTATION VALIDATION: Passed for CreateWatercolorsPaintingDto");
-        
+        Console.WriteLine("✅ DATA ANNOTATION VALIDATION: Passed for CreateWatercolorsPaintingDto");
+
         try
         {
-            Console.WriteLine($"🔄 PROCESSING: Mapping DTO to WatercolorsPainting entity");
-            
+            Console.WriteLine("🔄 PROCESSING: Mapping DTO to WatercolorsPainting entity");
+
             // Tạo mới đối tượng WatercolorsPainting từ DTO
             var watercolorsPainting = new WatercolorsPainting
             {
@@ -140,27 +140,31 @@ public class WatercolorsPaintingController : Controller
                 StyleId = createDto.StyleId
             };
 
-            Console.WriteLine($"🔍 FLUENT VALIDATION: Starting validation via service layer");
-            
+            Console.WriteLine("🔍 FLUENT VALIDATION: Starting validation via service layer");
+
             // Use the CreateWithValidation method which performs FluentValidation
             var stopwatch = Stopwatch.StartNew();
             var result = await _watercolorsPaintingService.CreateWithValidation(watercolorsPainting);
             stopwatch.Stop();
-            
-            Console.WriteLine($"⌛ PERFORMANCE: CreateWithValidation operation completed in {stopwatch.ElapsedMilliseconds}ms");
-            
+
+            Console.WriteLine(
+                $"⌛ PERFORMANCE: CreateWithValidation operation completed in {stopwatch.ElapsedMilliseconds}ms");
+
             // Check if result is an error message (string contains validation errors)
             if (result != "Thêm Thành công")
             {
                 Console.WriteLine($"❌ FLUENT VALIDATION: Failed with result: {result}");
-                return BadRequest(new { 
+                return BadRequest(new
+                {
                     Message = "Validation failed",
-                    Errors = result 
+                    Errors = result
                 });
             }
-            
-            Console.WriteLine($"✅ FLUENT VALIDATION: Passed, entity created successfully with ID: {watercolorsPainting.PaintingId}");
-            return CreatedAtAction(nameof(Get), new { id = watercolorsPainting.PaintingId }, MapToDto(watercolorsPainting));
+
+            Console.WriteLine(
+                $"✅ FLUENT VALIDATION: Passed, entity created successfully with ID: {watercolorsPainting.PaintingId}");
+            return CreatedAtAction(nameof(Get), new { id = watercolorsPainting.PaintingId },
+                MapToDto(watercolorsPainting));
         }
         catch (Exception ex)
         {
@@ -196,10 +200,7 @@ public class WatercolorsPaintingController : Controller
         try
         {
             var result = await _watercolorsPaintingService.Delete(id);
-            if (result)
-            {
-                return Ok(new { Message = $"Painting with ID {id} deleted successfully" });
-            }
+            if (result) return Ok(new { Message = $"Painting with ID {id} deleted successfully" });
             return NotFound(new { Message = $"Painting with ID {id} not found" });
         }
         catch (Exception ex)

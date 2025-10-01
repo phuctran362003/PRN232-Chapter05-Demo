@@ -1,15 +1,15 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RazorPage.WebApp.Models;
-using System.Text.Json;
 
 namespace RazorPage.WebApp.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
-    private readonly HttpClient _httpClient;
     private readonly string _apiUrl;
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<IndexModel> _logger;
 
     public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration)
     {
@@ -18,7 +18,7 @@ public class IndexModel : PageModel
         _apiUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7075/api";
     }
 
-    public List<WatercolorsPainting> Paintings { get; set; } = new List<WatercolorsPainting>();
+    public List<WatercolorsPainting> Paintings { get; set; } = new();
     public string ErrorMessage { get; set; } = string.Empty;
     public string SuccessMessage { get; set; } = string.Empty;
 
@@ -30,21 +30,18 @@ public class IndexModel : PageModel
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Paintings = JsonSerializer.Deserialize<List<WatercolorsPainting>>(content, 
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<WatercolorsPainting>();
-                
+                Paintings = JsonSerializer.Deserialize<List<WatercolorsPainting>>(content,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ??
+                            new List<WatercolorsPainting>();
+
                 // Set the Style object for each painting based on the StyleName property
                 foreach (var painting in Paintings)
-                {
                     if (!string.IsNullOrEmpty(painting.StyleName))
-                    {
                         painting.Style = new Style
                         {
                             StyleId = painting.StyleId ?? string.Empty,
                             StyleName = painting.StyleName
                         };
-                    }
-                }
             }
             else
             {
@@ -58,7 +55,7 @@ public class IndexModel : PageModel
             _logger.LogError(ex, "Error retrieving paintings");
         }
     }
-    
+
     public async Task<IActionResult> OnPostDeleteAsync(string id)
     {
         try
@@ -79,7 +76,7 @@ public class IndexModel : PageModel
             ErrorMessage = $"An error occurred: {ex.Message}";
             _logger.LogError(ex, "Error deleting painting");
         }
-        
+
         return RedirectToPage();
     }
 }

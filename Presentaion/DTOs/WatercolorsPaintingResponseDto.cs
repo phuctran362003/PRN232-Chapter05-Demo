@@ -1,26 +1,22 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+namespace Presentaion.DTOs;
 
-namespace Presentaion.DTOs
+public class WatercolorsPaintingResponseDto
 {
-    public class WatercolorsPaintingResponseDto
-    {
-        public string PaintingId { get; set; } = string.Empty;
+    public string PaintingId { get; set; } = string.Empty;
 
-        public string PaintingName { get; set; } = string.Empty;
+    public string PaintingName { get; set; } = string.Empty;
 
-        public string? PaintingDescription { get; set; }
+    public string? PaintingDescription { get; set; }
 
-        public string? PaintingAuthor { get; set; }
+    public string? PaintingAuthor { get; set; }
 
-        public decimal? Price { get; set; }
+    public decimal? Price { get; set; }
 
-        public int? PublishYear { get; set; }
+    public int? PublishYear { get; set; }
 
-        public DateTime? CreatedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
 
-        public string? StyleId { get; set; }
-        
-        public string? StyleName { get; set; }
-    }
+    public string? StyleId { get; set; }
+
+    public string? StyleName { get; set; }
 }

@@ -24,6 +24,5 @@ public class WatercolorsPainting
 
     [DefaultValue("SS00112")] public string? StyleId { get; set; } = "SS00112";
 
-    [JsonIgnore]
-    public virtual Style? Style { get; set; }
+    [JsonIgnore] public virtual Style? Style { get; set; }
 }

@@ -1,66 +1,66 @@
 @page
-@model RazorPage.WebApp.Pages.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "Create Watercolors Painting";
 }
 
 <div class="container">
     <h1 class="mt-4 mb-4">Create New Watercolors Painting</h1>
-    
+
     <div class="mb-3">
         <a asp-page="Index" class="btn btn-secondary">Back to List</a>
     </div>
-    
+
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
         <div class="alert alert-danger">@Model.ErrorMessage</div>
     }
-    
+
     <div class="row">
         <div class="col-md-8">
             <form method="post">
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.PaintingName" class="control-label"></label>
-                    <input asp-for="PaintingDto.PaintingName" class="form-control" />
+                    <input asp-for="PaintingDto.PaintingName" class="form-control"/>
                     <span asp-validation-for="PaintingDto.PaintingName" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.PaintingDescription" class="control-label"></label>
                     <textarea asp-for="PaintingDto.PaintingDescription" class="form-control" rows="3"></textarea>
                     <span asp-validation-for="PaintingDto.PaintingDescription" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.PaintingAuthor" class="control-label"></label>
-                    <input asp-for="PaintingDto.PaintingAuthor" class="form-control" />
+                    <input asp-for="PaintingDto.PaintingAuthor" class="form-control"/>
                     <span asp-validation-for="PaintingDto.PaintingAuthor" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.Price" class="control-label"></label>
-                    <input asp-for="PaintingDto.Price" class="form-control" />
+                    <input asp-for="PaintingDto.Price" class="form-control"/>
                     <span asp-validation-for="PaintingDto.Price" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.PublishYear" class="control-label"></label>
-                    <input asp-for="PaintingDto.PublishYear" class="form-control" />
+                    <input asp-for="PaintingDto.PublishYear" class="form-control"/>
                     <span asp-validation-for="PaintingDto.PublishYear" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.CreatedDate" class="control-label"></label>
-                    <input asp-for="PaintingDto.CreatedDate" class="form-control" type="date" />
+                    <input asp-for="PaintingDto.CreatedDate" class="form-control" type="date"/>
                     <span asp-validation-for="PaintingDto.CreatedDate" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label asp-for="PaintingDto.StyleId" class="control-label"></label>
-                    <input asp-for="PaintingDto.StyleId" class="form-control" />
+                    <input asp-for="PaintingDto.StyleId" class="form-control"/>
                     <span asp-validation-for="PaintingDto.StyleId" class="text-danger"></span>
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <button type="submit" class="btn btn-primary">Create</button>
                 </div>
@@ -70,5 +70,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

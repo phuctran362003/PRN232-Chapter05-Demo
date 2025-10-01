@@ -1,21 +1,21 @@
 @page "{id}"
-@model RazorPage.WebApp.Pages.DetailsModel
+@model DetailsModel
 @{
     ViewData["Title"] = "Painting Details";
 }
 
 <div class="container">
     <h1 class="mt-4 mb-4">Painting Details</h1>
-    
+
     <div class="mb-3">
         <a asp-page="Index" class="btn btn-secondary">Back to List</a>
     </div>
-    
+
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
         <div class="alert alert-danger">@Model.ErrorMessage</div>
     }
-    
+
     @if (Model.Painting != null)
     {
         <div class="card">
@@ -28,22 +28,22 @@
                         <dl class="row">
                             <dt class="col-sm-3">ID:</dt>
                             <dd class="col-sm-9">@Model.Painting.PaintingId</dd>
-                            
+
                             <dt class="col-sm-3">Description:</dt>
                             <dd class="col-sm-9">@Model.Painting.PaintingDescription</dd>
-                            
+
                             <dt class="col-sm-3">Author:</dt>
                             <dd class="col-sm-9">@Model.Painting.PaintingAuthor</dd>
-                            
+
                             <dt class="col-sm-3">Price:</dt>
                             <dd class="col-sm-9">@(Model.Painting.Price?.ToString("N0") ?? "N/A") VND</dd>
-                            
+
                             <dt class="col-sm-3">Publish Year:</dt>
                             <dd class="col-sm-9">@(Model.Painting.PublishYear ?? 0)</dd>
-                            
+
                             <dt class="col-sm-3">Created Date:</dt>
                             <dd class="col-sm-9">@(Model.Painting.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</dd>
-                            
+
                             <dt class="col-sm-3">Style:</dt>
                             <dd class="col-sm-9">@(Model.Painting.StyleName ?? Model.Painting.Style?.StyleName ?? Model.Painting.StyleId)</dd>
                         </dl>
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <a href="#" class="btn btn-danger" 
+                <a href="#" class="btn btn-danger"
                    onclick="confirmDelete('@Model.Painting.PaintingId', '@Model.Painting.PaintingName')">Delete</a>
             </div>
         </div>
@@ -63,7 +63,7 @@
 </div>
 
 <form id="deleteForm" method="post" asp-page="Index" asp-page-handler="Delete">
-    <input type="hidden" id="paintingIdToDelete" name="id" />
+    <input type="hidden" id="paintingIdToDelete" name="id"/>
 </form>
 
 @section Scripts {

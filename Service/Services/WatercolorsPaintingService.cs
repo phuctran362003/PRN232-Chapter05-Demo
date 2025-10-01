@@ -2,7 +2,6 @@
 using Repository.Entities;
 using Repository.Repositories;
 using Service.Interfaces;
-using System;
 
 namespace Service.Services;
 
@@ -25,38 +24,37 @@ public class WatercolorsPaintingService : IWatercolorsPaintingService
 
     public async Task<string> CreateWithValidation(WatercolorsPainting watercolorsPainting)
     {
-        Console.WriteLine($"🔍 SERVICE: Starting CreateWithValidation for painting '{watercolorsPainting.PaintingName}'");
-        Console.WriteLine($"⚙️ VALIDATION: Initiating FluentValidation checks");
-        
+        Console.WriteLine(
+            $"🔍 SERVICE: Starting CreateWithValidation for painting '{watercolorsPainting.PaintingName}'");
+        Console.WriteLine("⚙️ VALIDATION: Initiating FluentValidation checks");
+
         // Kiểm tra dữ liệu với FluentValidation
         var validationResult = await _validator.ValidateAsync(watercolorsPainting);
-        
-        if (!validationResult.IsValid) 
+
+        if (!validationResult.IsValid)
         {
             var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
             Console.WriteLine($"❌ VALIDATION: Failed with {validationResult.Errors.Count} errors:");
             foreach (var error in validationResult.Errors)
-            {
                 Console.WriteLine($"   - Property '{error.PropertyName}': {error.ErrorMessage}");
-            }
             return errorMessages;
         }
-        
-        Console.WriteLine($"✅ VALIDATION: All validation checks passed");
-        
-        Console.WriteLine($"🆔 ID GENERATION: Creating unique ID for painting");
+
+        Console.WriteLine("✅ VALIDATION: All validation checks passed");
+
+        Console.WriteLine("🆔 ID GENERATION: Creating unique ID for painting");
         watercolorsPainting.PaintingId = GenerateId();
         Console.WriteLine($"🆔 ID GENERATION: Generated ID '{watercolorsPainting.PaintingId}'");
-        
-        Console.WriteLine($"💾 DATABASE: Saving painting to database");
+
+        Console.WriteLine("💾 DATABASE: Saving painting to database");
         var result = await _repo.CreateAsync(watercolorsPainting);
-        
-        if (result == 1) 
+
+        if (result == 1)
         {
             Console.WriteLine($"✅ DATABASE: Successfully saved painting with ID '{watercolorsPainting.PaintingId}'");
             return "Thêm Thành công";
         }
-        
+
         Console.WriteLine($"❌ DATABASE: Failed to save painting with ID '{watercolorsPainting.PaintingId}'");
         return "Thêm thất bại";
     }

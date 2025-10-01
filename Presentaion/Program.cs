@@ -23,31 +23,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers with logging for validation
 builder.Services.AddControllers(options =>
-{
-    // Add validation logging filter
-    options.Filters.Add<ValidationLoggingFilter>();
-})
-.ConfigureApiBehaviorOptions(options =>
-{
-    // Log validation errors in the ModelState
-    var builtInFactory = options.InvalidModelStateResponseFactory;
-    
-    options.InvalidModelStateResponseFactory = context =>
     {
-        // Log all validation errors
-        Console.WriteLine($"❌ MODEL VALIDATION: Failed with {context.ModelState.ErrorCount} errors:");
-        foreach (var state in context.ModelState)
+        // Add validation logging filter
+        options.Filters.Add<ValidationLoggingFilter>();
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Log validation errors in the ModelState
+        var builtInFactory = options.InvalidModelStateResponseFactory;
+
+        options.InvalidModelStateResponseFactory = context =>
         {
+            // Log all validation errors
+            Console.WriteLine($"❌ MODEL VALIDATION: Failed with {context.ModelState.ErrorCount} errors:");
+            foreach (var state in context.ModelState)
             foreach (var error in state.Value.Errors)
-            {
                 Console.WriteLine($"   - Property '{state.Key}': {error.ErrorMessage}");
-            }
-        }
-        
-        // Call the default factory
-        return builtInFactory(context);
-    };
-});
+
+            // Call the default factory
+            return builtInFactory(context);
+        };
+    });
 
 // Register the custom model binder provider
 builder.Services.Configure<MvcOptions>(options =>
@@ -104,7 +100,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "default-key-if-missing"))
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "default-key-if-missing"))
         };
     });
 
@@ -182,10 +180,13 @@ Console.WriteLine("=============================================================
 app.UseHttpsRedirection();
 
 // Add logging middleware for routing
-app.Use(async (context, next) => {
-    Console.WriteLine($"🧭 ROUTING: Request received for path {context.Request.Path} with method {context.Request.Method}");
+app.Use(async (context, next) =>
+{
+    Console.WriteLine(
+        $"🧭 ROUTING: Request received for path {context.Request.Path} with method {context.Request.Method}");
     await next();
-    Console.WriteLine($"🧭 ROUTING: Response completed for path {context.Request.Path} with status code {context.Response.StatusCode}");
+    Console.WriteLine(
+        $"🧭 ROUTING: Response completed for path {context.Request.Path} with status code {context.Response.StatusCode}");
 });
 
 app.UseAuthorization();
