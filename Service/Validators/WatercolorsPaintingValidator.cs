@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Repository.Entities;
+using System;
 
 namespace Service.Validators;
 
@@ -7,6 +8,10 @@ public class WatercolorsPaintingValidator : AbstractValidator<WatercolorsPaintin
 {
     public WatercolorsPaintingValidator()
     {
+        Console.WriteLine($"⚙️ FLUENT VALIDATOR: Initializing WatercolorsPaintingValidator with validation rules");
+        
+        // Set our cascade mode to continue on validation failures so all rules are evaluated
+        CascadeMode = CascadeMode.Continue;
         RuleFor(x => x.PaintingName)
             .NotEmpty().WithMessage("Tên tranh là bắt buộc.")
             // Bắt buộc PaintingName có giá trị (không null, không rỗng)
@@ -39,7 +44,7 @@ public class WatercolorsPaintingValidator : AbstractValidator<WatercolorsPaintin
             .GreaterThan(0).WithMessage("Giá phải lớn hơn 0.")
             // Giá trị Price phải > 0
 
-            .Must(price => decimal.Round(price.Value, 2) == price)
+            .Must(price => price.HasValue && decimal.Round(price.Value, 2) == price)
             .WithMessage("Giá chỉ được phép có tối đa 2 chữ số thập phân.");
         // Giá trị Price chỉ được phép có tối đa 2 chữ số thập phân
     }

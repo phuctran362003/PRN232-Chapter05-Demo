@@ -2,12 +2,15 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using Presentaion.Filters;
+using Presentaion.ModelBinders;
 using Repository.Entities;
 using Repository.Repositories;
 using Service.Interfaces;
@@ -18,7 +21,41 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+// Add controllers with logging for validation
+builder.Services.AddControllers(options =>
+{
+    // Add validation logging filter
+    options.Filters.Add<ValidationLoggingFilter>();
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    // Log validation errors in the ModelState
+    var builtInFactory = options.InvalidModelStateResponseFactory;
+    
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        // Log all validation errors
+        Console.WriteLine($"❌ MODEL VALIDATION: Failed with {context.ModelState.ErrorCount} errors:");
+        foreach (var state in context.ModelState)
+        {
+            foreach (var error in state.Value.Errors)
+            {
+                Console.WriteLine($"   - Property '{state.Key}': {error.ErrorMessage}");
+            }
+        }
+        
+        // Call the default factory
+        return builtInFactory(context);
+    };
+});
+
+// Register the custom model binder provider
+builder.Services.Configure<MvcOptions>(options =>
+{
+    // Add at the beginning of the provider list to ensure it wraps all other providers
+    options.ModelBinderProviders.Insert(0, new LoggingModelBinderProvider());
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -67,7 +104,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "default-key-if-missing"))
         };
     });
 
@@ -124,7 +161,32 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Log startup information about the logging implementation
+Console.WriteLine("======================================================================");
+Console.WriteLine("💡 LOGGING IMPLEMENTATION FOR ASP.NET CORE FLOW VISUALIZATION");
+Console.WriteLine("======================================================================");
+Console.WriteLine("✅ Routing logs: Shows how URL paths are matched to controller actions");
+Console.WriteLine("✅ Model Binding logs: Shows how data from HTTP request is bound to C# objects");
+Console.WriteLine("✅ Validation logs: Shows both Data Annotation and FluentValidation processes");
+Console.WriteLine("✅ Repository logs: Shows database operations and query processing");
+Console.WriteLine("======================================================================");
+Console.WriteLine("🔍 Look for these log prefixes to understand the flow:");
+Console.WriteLine("   🧭 ROUTING: URL pattern matching and route determination");
+Console.WriteLine("   📦 MODEL BINDING: Parameter binding from route/query/body");
+Console.WriteLine("   ✅ VALIDATION: Data validation using annotations and FluentValidation");
+Console.WriteLine("   🔍 CONTROLLER/SERVICE: Business logic flow");
+Console.WriteLine("   💾 REPOSITORY: Database interactions");
+Console.WriteLine("   ⌛ PERFORMANCE: Timing information for operations");
+Console.WriteLine("======================================================================");
+
 app.UseHttpsRedirection();
+
+// Add logging middleware for routing
+app.Use(async (context, next) => {
+    Console.WriteLine($"🧭 ROUTING: Request received for path {context.Request.Path} with method {context.Request.Method}");
+    await next();
+    Console.WriteLine($"🧭 ROUTING: Response completed for path {context.Request.Path} with status code {context.Response.StatusCode}");
+});
 
 app.UseAuthorization();
 
